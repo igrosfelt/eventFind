@@ -31,6 +31,22 @@
     </script>
     <script>
 
+      // Initializes Ticketmaster API key variable
+      var tickemasterAPIKey = "apikey=czmUT7VaCKrr1WgK1oncNUaVREIzmtQz";
+
+      // HTTP GET request to Ticketmaster API
+      function httpGetAsync(theUrl, callback) {
+          var xmlHttp = new XMLHttpRequest();
+          xmlHttp.onreadystatechange = function() {
+              if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                  callback(xmlHttp.responseText);
+          }
+          xmlHttp.open("GET", theUrl, true); // true for asynchronous
+          xmlHttp.send(null);
+      }
+
+      httpGetAsync(('https://app.ticketmaster.com/discovery/v2/events.json?%APIKey%&postalCode=46240&radius=10&unit=miles&source=ticketmaster&startDateTime=2017-01-01T00%3A00%3A00Z&endDateTime=2017-12-12T00%3A00%3A00Z&includeTBA=no&includeTBD=no').replace('%APIKey%', tickemasterAPIKey), console.log());
+
       // sets button to get DOM element with id='submit'
       var button = document.getElementById("submit");
 
