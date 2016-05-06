@@ -24,11 +24,13 @@
       <input id="address" type="textbox">
       <input id="submit" type="submit" value="Submit">
     </h2>
+    <h3 id="location-info"></h3>
     <div id="map"></div>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDrACRPiEvB85a4nDF_S02TizgOefrX0YM">
     </script>
     <script>
+
       // sets button to get DOM element with id='submit'
       var button = document.getElementById("submit");
 
@@ -40,15 +42,15 @@
         var map = new google.maps.Map(mapDiv, {
           // sets zoom level of initialized map
           zoom: 12,
+          // set default location to Sydney, Australia
           center: {lat: -34.397, lng: 150.644},
         });
         var geocoder = new google.maps.Geocoder();
-        button.addEventListener('click', function() {
-          geocodeAddress(geocoder, map);
-        });
-        button.removeEventListener('click', initMap);
         geocodeAddress(geocoder, map);
-      }
+        // clear the value in the textbox
+        document.getElementById('address').value = "";
+
+      };
 
       // locates user input on Google Map
       var geocodeAddress = function(geocoder, resultsMap) {
@@ -60,13 +62,24 @@
               map: resultsMap,
               position: results[0].geometry.location
             });
+            if (document.getElementById("new-location-info") !== null) {
+              var list = document.getElementById("location-info");
+              list.removeChild(list.childNodes[0]);
+            };
+            // appends new textnode to <h3>
+            var node = document.createElement("P");
+            node.setAttribute("id", "new-location-info")
+            var textnode = document.createTextNode("Showing results for area surrounding: " + results[0].formatted_address);
+            node.appendChild(textnode);
+            document.getElementById("location-info").appendChild(node);
           } else {
             alert('Geocode was not successful for the following reason: ' + status);
-          }
+          };
         });
       };
 
       button.addEventListener('click', initMap);
+      document.getElementById('address').value = "";
 
     </script>
   </body>
