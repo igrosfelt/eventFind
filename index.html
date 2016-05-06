@@ -20,12 +20,14 @@
       Find today's local shows, concerts, and events in your area!
     </h1>
     <h2>
-      Enter your zip code:
+      Enter your location:
       <input id="address" type="textbox">
       <input id="submit" type="submit" value="Submit">
     </h2>
     <div id="map"></div>
-
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDrACRPiEvB85a4nDF_S02TizgOefrX0YM">
+    </script>
     <script>
       // sets button to get DOM element with id='submit'
       var button = document.getElementById("submit");
@@ -66,9 +68,6 @@
 
       button.addEventListener('click', initMap);
 
-    </script>
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDrACRPiEvB85a4nDF_S02TizgOefrX0YM">
     </script>
   </body>
 </html>
