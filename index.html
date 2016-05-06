@@ -1,40 +1,74 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Event Find</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
     <style>
-      #map {
-        width: 55%;
-        padding: 20% 20% 20% 20%;
-      }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    #map {
+      height: 75%;
+    }
     </style>
   </head>
   <body>
-    <script src="app.js"></script>
     <h1>
       Find today's local shows, concerts, and events in your area!
     </h1>
     <h2>
-      Enter your zip code: <input type="text" name="zip" id="input"><br>
-      <input type="submit" value="Submit" id="submit">
+      Enter your zip code:
+      <input id="address" type="textbox">
+      <input id="submit" type="submit" value="Submit">
     </h2>
     <div id="map"></div>
-      <script src="https://maps.googleapis.com/maps/api/js?callback=initMap" async defer></script>
-      <script>
-        function initMap() {
-        var mapDiv = document.getElementById('map');
+
+    <script>
+      // sets button to get DOM element with id='submit'
+      var button = document.getElementById("submit");
+
+      // sets MapDiv to get DOM element with id='map'
+      var mapDiv = document.getElementById('map');
+
+      // initializes Google Map using Google Map API
+      var initMap = function() {
         var map = new google.maps.Map(mapDiv, {
-          zoom: 8,
-          center: {lat: -34.397, lng: 150.644}
+          // sets zoom level of initialized map
+          zoom: 12,
+          center: {lat: -34.397, lng: 150.644},
         });
         var geocoder = new google.maps.Geocoder();
-
-        document.getElementById('submit').addEventListener('click', function() {
-          // the line below this should be saved to a variable and then passed into the geocoder function
-          console.log(document.getElementById('input').value)
+        button.addEventListener('click', function() {
           geocodeAddress(geocoder, map);
         });
+        button.removeEventListener('click', initMap);
+        geocodeAddress(geocoder, map);
       }
-      </script>
 
+      // locates user input on Google Map
+      var geocodeAddress = function(geocoder, resultsMap) {
+        var address = document.getElementById('address').value;
+        geocoder.geocode({'address': address}, function(results, status) {
+          if (status === google.maps.GeocoderStatus.OK) {
+            resultsMap.setCenter(results[0].geometry.location);
+            var marker = new google.maps.Marker({
+              map: resultsMap,
+              position: results[0].geometry.location
+            });
+          } else {
+            alert('Geocode was not successful for the following reason: ' + status);
+          }
+        });
+      };
+
+      button.addEventListener('click', initMap);
+
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDrACRPiEvB85a4nDF_S02TizgOefrX0YM">
+    </script>
   </body>
 </html>
