@@ -34,7 +34,7 @@
       // Initializes Ticketmaster API key variable
       var tickemasterAPIKey = "apikey=czmUT7VaCKrr1WgK1oncNUaVREIzmtQz";
 
-      // HTTP GET request to Ticketmaster API
+      // Asynchronous HTTP GET request to Ticketmaster API
       function httpGetAsync(theUrl, callback) {
           var xmlHttp = new XMLHttpRequest();
           xmlHttp.onreadystatechange = function() {
@@ -43,9 +43,37 @@
           }
           xmlHttp.open("GET", theUrl, true); // true for asynchronous
           xmlHttp.send(null);
-      }
+      };
 
-      httpGetAsync(('https://app.ticketmaster.com/discovery/v2/events.json?%APIKey%&postalCode=46240&radius=10&unit=miles&source=ticketmaster&startDateTime=2017-01-01T00%3A00%3A00Z&endDateTime=2017-12-12T00%3A00%3A00Z&includeTBA=no&includeTBD=no').replace('%APIKey%', tickemasterAPIKey), console.log());
+      var getTodayDate = function() {
+        var d = new Date();
+        var year = (d.getFullYear() + 1).toString();
+        var month = (d.getMonth() + 1).toString();
+        if (month.length < 2) {
+          month = "0" + month;
+        };
+        var date = d.getDate().toString();
+        if (date.length < 2) {
+          date = "0" + date;
+        };
+        var formattedDate = (year + "-" + month + "-" + date + "T00:00:00Z");
+        return formattedDate;
+      };
+
+      var ticketmasterRequest = function(postalCode, radius = 'radius=10&', units = 'units=miles&', startDateTime = 'startDateTime=', callback) {
+        httpGetAsync(('https://app.ticketmaster.com/discovery/v2/events.json?%APIKey%').replace('%APIKey%', tickemasterAPIKey), callback);
+      };
+
+      // Synchronous HTTP GET request to Ticketmaster API --NOTE: deprecated because of its detrimental effects to the end user's experience.
+      function httpGet(theUrl) {
+          var xmlHttp = new XMLHttpRequest();
+          xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+          xmlHttp.send( null );
+          console.log(xmlHttp.responseText);
+          return xmlHttp.responseText;
+      };
+
+      //httpGet(('https://app.ticketmaster.com/discovery/v2/events.json?%APIKey%').replace('%APIKey%', tickemasterAPIKey));
 
       // sets button to get DOM element with id='submit'
       var button = document.getElementById("submit");
