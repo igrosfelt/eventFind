@@ -42,8 +42,8 @@
         var map = new google.maps.Map(mapDiv, {
           // sets zoom level of initialized map
           zoom: 12,
-          // set default location to Sydney, Australia
-          center: {lat: -34.397, lng: 150.644},
+          // set default location to DAKAR, Senegal, West Africa (specifically, Larry Ebaugh's house)
+          center: {lat: 14.6802, lng: -17.4436},
         });
         var geocoder = new google.maps.Geocoder();
         geocodeAddress(geocoder, map);
@@ -62,7 +62,9 @@
               map: resultsMap,
               position: results[0].geometry.location
             });
+            // checks whether paragraph exists in <h3>
             if (document.getElementById("new-location-info") !== null) {
+              // if true, remove child node <p>
               var list = document.getElementById("location-info");
               list.removeChild(list.childNodes[0]);
             };
@@ -73,7 +75,11 @@
             node.appendChild(textnode);
             document.getElementById("location-info").appendChild(node);
           } else {
-            alert('Geocode was not successful for the following reason: ' + status);
+            if (status === "ZERO_RESULTS") {
+              alert('Geocode was not successful for the following reason: LOCATION NOT FOUND')
+            } else {
+              alert('Geocode was not successful for the following reason: ' + status);
+            };
           };
         });
       };
