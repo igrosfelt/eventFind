@@ -9,23 +9,32 @@
     </style>
   </head>
   <body>
+    <script src="app.js"></script>
     <h1>
       Find today's local shows, concerts, and events in your area!
     </h1>
     <h2>
-      Enter your zip code: <input type="text" name="zipcode"><br>
-      <input type="submit" value="Submit">
+      Enter your zip code: <input type="text" name="zip" id="input"><br>
+      <input type="submit" value="Submit" id="submit">
     </h2>
     <div id="map"></div>
-    <script src="https://maps.googleapis.com/maps/api/js?callback=initMap" async defer></script>
-    <script>
-      function initMap() {
+      <script src="https://maps.googleapis.com/maps/api/js?callback=initMap" async defer></script>
+      <script>
+        function initMap() {
         var mapDiv = document.getElementById('map');
         var map = new google.maps.Map(mapDiv, {
-          center: {lat: 44.540, lng: -78.546},
-          zoom: 7
+          zoom: 8,
+          center: {lat: -34.397, lng: 150.644}
+        });
+        var geocoder = new google.maps.Geocoder();
+
+        document.getElementById('submit').addEventListener('click', function() {
+          // the line below this should be saved to a variable and then passed into the geocoder function
+          console.log(document.getElementById('input').value)
+          geocodeAddress(geocoder, map);
         });
       }
-    </script>
+      </script>
+
   </body>
 </html>
