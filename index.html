@@ -101,13 +101,13 @@
       };
 
       // retrieve ZIP code from Google Geocoder address object
-      var getZIPCode = function(addressJSON) {
+      var getPostalCode = function(addressJSON) {
         var addressObject = JSON.parse(addressJSON);
-        var ZIPCodeObject = addressObject.results[0].address_components.filter(function(address_component) {
+        var postalCodeObject = addressObject.results[0].address_components.filter(function(address_component) {
           return address_component.types[0] === "postal_code"
         });
-        console.log('ZIPCodeObject[0].short_name: ' + ZIPCodeObject[0].short_name);
-        return ZIPCodeObject[0].short_name;
+        console.log('postalCodeObject[0].short_name: ' + postalCodeObject[0].short_name);
+        return postalCodeObject[0].short_name;
       };
 
       // failed effort to try to parse an address string from the api response
@@ -180,7 +180,7 @@
         addressArray.forEach(function(element) {
           googleGeocoderCall += (element + "+");
         });
-        httpGetAsync(googleGeocoderCall, getZIPCode);
+        httpGetAsync(googleGeocoderCall, getPostalCode);
       });
       button.addEventListener('click', clearText);
 
