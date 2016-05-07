@@ -32,7 +32,7 @@
     <script>
 
       // Initializes Ticketmaster API key variable
-      var tickemasterAPIKey = "apikey=czmUT7VaCKrr1WgK1oncNUaVREIzmtQz";
+      var ticketmasterAPIKey = "apikey=czmUT7VaCKrr1WgK1oncNUaVREIzmtQz";
 
       // Asynchronous HTTP GET request to Ticketmaster API
       function httpGetAsync(theUrl, callback) {
@@ -45,6 +45,9 @@
           xmlHttp.send(null);
       };
 
+      //global variable to plug into
+      var formattedDate;
+
       var getTodayDate = function() {
         var d = new Date();
         var year = d.getFullYear().toString();
@@ -56,14 +59,31 @@
         if (date.length < 2) {
           date = "0" + date;
         };
-        var todayDate = (year + "-" + month + "-" + date);
-        return todayDate;
+        formattedDate = (year + "-" + month + "-" + date + "T00:00:00Z");
       };
 
-      //var today = getTodayDate();
+      //initialize variables
+      var postalCode;
+      var ticketmasterRequest;
 
-      var ticketmasterRequest = function(postalCode, radius = 'radius=10&', units = 'units=miles&', startDateTime = 'startDateTime=', callback) {
-        httpGetAsync(('https://app.ticketmaster.com/discovery/v2/events.json?%APIKey%').replace('%APIKey%', tickemasterAPIKey), callback);
+      //plugs variables into url
+      var BuildTicketmasterRequest = function(postalCode, date, key) {
+        ticketmasterRequest = "https://app.ticketmaster.com/discovery/v2/events.json?postalCode=" + postalCode + "&size=10&startDateTime=" + date + "&" + key;
+      };
+
+      //processes variables and sends the request
+      var sendSubmission = function(){
+      	postalCode = document.getElementById('address').value;
+      	getTodayDate();
+      	BuildTicketmasterRequest(postalCode, formattedDate, ticketmasterAPIKey);
+      	console.log(ticketmasterRequest);
+      	httpGetAsync(ticketmasterRequest, parseAddress);
+      };
+
+      //failed effort to try to parse an address string from the api response
+      var parseAddress = function(xHttp){
+        console.log(xHttp._embedded);
+        console.log(xHttp._embedded.events[0]._embedded.venues[0].address.line1);
       };
 
       // Synchronous HTTP GET request to Ticketmaster API --NOTE: deprecated because of its detrimental effects to the end user's experience.
@@ -131,6 +151,7 @@
       };
 
       button.addEventListener('click', initMap);
+      button.addEventListener('click', sendSubmission);
       document.getElementById('address').value = "";
 
     </script>
