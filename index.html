@@ -59,21 +59,28 @@
          return year + "-" + month + "-" + date + "T00:00:00Z";
       }
 
-      // return today's date
       var getTodayDate = function() {
         var d = new Date();
+        // return today's date
         return d;
       };
 
-      // return tomorrow's date
       var getTomorrowDate = function() {
         var d = new Date();
         d.setDate(d.getDate() + 1)
+        // return tomorrow's date
         return d;
       };
 
       var todayDateFormatted = formatDate(getTodayDate());
       var tomorrowDateFormatted = formatDate(getTomorrowDate());
+
+      // parse input
+      var parseInput = function(input) {
+        return input.split(" ");
+      };
+
+      var googleGeocoderCall = "https://maps.googleapis.com/maps/api/geocode/json?address="
 
       // initialize variables
       var postalCode;
@@ -91,6 +98,16 @@
       	BuildTicketmasterRequest(postalCode, formattedDate, ticketmasterAPIKey);
       	console.log(ticketmasterRequest);
       	httpGetAsync(ticketmasterRequest, parseAddress);
+      };
+
+      // retrieve ZIP code from Google Geocoder address object
+      var getZIPCode = function(addressJSON) {
+        var addressObject = JSON.parse(addressJSON);
+        var ZIPCodeObject = addressObject.results[0].address_components.filter(function(address_component) {
+          return address_component.types[0] === "postal_code"
+        });
+        console.log('ZIPCodeObject[0].short_name: ' + ZIPCodeObject[0].short_name);
+        return ZIPCodeObject[0].short_name;
       };
 
       // failed effort to try to parse an address string from the api response
@@ -115,13 +132,12 @@
         });
         var geocoder = new google.maps.Geocoder();
         geocodeAddress(geocoder, map);
-        // clear the value in the textbox
-        document.getElementById('address').value = "";
       };
 
       // locate user input on Google Map
       var geocodeAddress = function(geocoder, resultsMap) {
         var address = document.getElementById('address').value;
+        // https://developers.google.com/maps/documentation/javascript/geocoding#GeocodingResponses
         geocoder.geocode({'address': address}, function(results, status) {
           if (status === google.maps.GeocoderStatus.OK) {
             resultsMap.setCenter(results[0].geometry.location);
@@ -129,13 +145,13 @@
               map: resultsMap,
               position: results[0].geometry.location
             });
-            // check whether paragraph exists in <h3> element
+            // check whether <p> child exists in <h3> element
             if (document.getElementById("new-location-info") !== null) {
               // if true, remove child node <p> element
               var list = document.getElementById("location-info");
               list.removeChild(list.childNodes[0]);
             };
-            // appends new textnode to <h3>
+            // append new textnode to <h3> element
             var node = document.createElement("P");
             node.setAttribute("id", "new-location-info")
             var textnode = document.createTextNode("Showing results for area surrounding: " + results[0].formatted_address);
@@ -148,12 +164,25 @@
               alert('Geocode was not successful for the following reason: ' + status);
             };
           };
+          return results[0];
         });
       };
 
+      // clear input from textbox
+      var clearText = function() {
+        document.getElementById('address').value = "";
+      };
+
       button.addEventListener('click', initMap);
-      button.addEventListener('click', sendSubmission);
-      document.getElementById('address').value = "";
+      //button.addEventListener('click', sendSubmission);
+      button.addEventListener('click', function() {
+        var addressArray = parseInput(document.getElementById('address').value);
+        addressArray.forEach(function(element) {
+          googleGeocoderCall += (element + "+");
+        });
+        httpGetAsync(googleGeocoderCall, getZIPCode);
+      });
+      button.addEventListener('click', clearText);
 
     </script>
   </body>
