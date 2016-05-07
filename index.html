@@ -83,30 +83,31 @@
       var googleGeocoderCall = "https://maps.googleapis.com/maps/api/geocode/json?address="
 
       // initialize variables
-      var postalCode;
+      //var postalCode;
       var ticketmasterRequest;
 
       // plug variables into url
-      var BuildTicketmasterRequest = function(postalCode, date, key) {
-        ticketmasterRequest = "https://app.ticketmaster.com/discovery/v2/events.json?postalCode=" + postalCode + "&size=10&startDateTime=" + date + "&" + key;
+      var buildTicketmasterRequest = function(postalCode, startDate, endDate, APIkey) {
+        ticketmasterRequest = "https://app.ticketmaster.com/discovery/v2/events.json?postalCode=" + postalCode + "&radius=10&unit=miles&startDateTime="
+          + startDate + "&endDateTime=" + endDate + "&" + APIkey;
+        return ticketmasterRequest;
       };
 
       // process variables and sends the request
-      var sendSubmission = function() {
+      /*var sendSubmission = function() {
       	postalCode = document.getElementById('address').value;
       	getTodayDate();
-      	BuildTicketmasterRequest(postalCode, formattedDate, ticketmasterAPIKey);
+      	buildTicketmasterRequest(postalCode, formattedDate, ticketmasterAPIKey);
       	console.log(ticketmasterRequest);
       	httpGetAsync(ticketmasterRequest, parseAddress);
-      };
+      };*/
 
-      // retrieve ZIP code from Google Geocoder address object
+      // retrieve ZIP code from Google Geocoder JSON format
       var getPostalCode = function(addressJSON) {
         var addressObject = JSON.parse(addressJSON);
         var postalCodeObject = addressObject.results[0].address_components.filter(function(address_component) {
           return address_component.types[0] === "postal_code"
         });
-        console.log('postalCodeObject[0].short_name: ' + postalCodeObject[0].short_name);
         return postalCodeObject[0].short_name;
       };
 
@@ -174,14 +175,19 @@
       };
 
       button.addEventListener('click', initMap);
-      //button.addEventListener('click', sendSubmission);
       button.addEventListener('click', function() {
         var addressArray = parseInput(document.getElementById('address').value);
         addressArray.forEach(function(element) {
           googleGeocoderCall += (element + "+");
         });
-        httpGetAsync(googleGeocoderCall, getPostalCode);
+        //httpGetAsync(googleGeocoderCall, getPostalCode);
+        httpGetAsync(googleGeocoderCall, function(result) {
+          var postalCode = getPostalCode(result);
+          var ticketmasterRequest = buildTicketmasterRequest(postalCode, todayDateFormatted, tomorrowDateFormatted, ticketmasterAPIKey);
+          console.log(ticketmasterRequest);
+        });
       });
+      //button.addEventListener('click', sendSubmission);
       button.addEventListener('click', clearText);
 
     </script>
