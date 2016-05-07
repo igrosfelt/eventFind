@@ -31,7 +31,7 @@
     </script>
     <script>
 
-      // Initializes Ticketmaster API key variable
+      // Initialize Ticketmaster API key variable
       var ticketmasterAPIKey = "apikey=czmUT7VaCKrr1WgK1oncNUaVREIzmtQz";
 
       // Asynchronous HTTP GET request to Ticketmaster API
@@ -79,13 +79,13 @@
       var postalCode;
       var ticketmasterRequest;
 
-      // plugs variables into url
+      // plug variables into url
       var BuildTicketmasterRequest = function(postalCode, date, key) {
         ticketmasterRequest = "https://app.ticketmaster.com/discovery/v2/events.json?postalCode=" + postalCode + "&size=10&startDateTime=" + date + "&" + key;
       };
 
-      //processes variables and sends the request
-      var sendSubmission = function(){
+      // process variables and sends the request
+      var sendSubmission = function() {
       	postalCode = document.getElementById('address').value;
       	getTodayDate();
       	BuildTicketmasterRequest(postalCode, formattedDate, ticketmasterAPIKey);
@@ -93,33 +93,22 @@
       	httpGetAsync(ticketmasterRequest, parseAddress);
       };
 
-      //failed effort to try to parse an address string from the api response
+      // failed effort to try to parse an address string from the api response
       var parseAddress = function(xHttp){
         console.log(xHttp._embedded);
         console.log(xHttp._embedded.events[0]._embedded.venues[0].address.line1);
       };
 
-      // Synchronous HTTP GET request to Ticketmaster API --NOTE: deprecated because of its detrimental effects to the end user's experience.
-      function httpGet(theUrl) {
-          var xmlHttp = new XMLHttpRequest();
-          xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-          xmlHttp.send( null );
-          console.log(xmlHttp.responseText);
-          return xmlHttp.responseText;
-      };
-
-      //httpGet(('https://app.ticketmaster.com/discovery/v2/events.json?%APIKey%').replace('%APIKey%', tickemasterAPIKey));
-
-      // sets button to get DOM element with id='submit'
+      // set button to get DOM element with id='submit'
       var button = document.getElementById("submit");
 
-      // sets MapDiv to get DOM element with id='map'
+      // set MapDiv to get DOM element with id='map'
       var mapDiv = document.getElementById('map');
 
-      // initializes Google Map using Google Map API
+      // initialize Google Map using Google Map API
       var initMap = function() {
         var map = new google.maps.Map(mapDiv, {
-          // sets zoom level of initialized map
+          // set zoom level of initialized map
           zoom: 12,
           // set default location to DAKAR, Senegal, West Africa (specifically, Larry Ebaugh's house)
           center: {lat: 14.6802, lng: -17.4436},
@@ -128,10 +117,9 @@
         geocodeAddress(geocoder, map);
         // clear the value in the textbox
         document.getElementById('address').value = "";
-
       };
 
-      // locates user input on Google Map
+      // locate user input on Google Map
       var geocodeAddress = function(geocoder, resultsMap) {
         var address = document.getElementById('address').value;
         geocoder.geocode({'address': address}, function(results, status) {
@@ -141,9 +129,9 @@
               map: resultsMap,
               position: results[0].geometry.location
             });
-            // checks whether paragraph exists in <h3>
+            // check whether paragraph exists in <h3> element
             if (document.getElementById("new-location-info") !== null) {
-              // if true, remove child node <p>
+              // if true, remove child node <p> element
               var list = document.getElementById("location-info");
               list.removeChild(list.childNodes[0]);
             };
