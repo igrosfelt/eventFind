@@ -100,10 +100,8 @@
           return address_component.types[0] === "postal_code";
         });
         if (postalCodeObject[0]) {
-          console.log("made it to: true");
           return true;
         } else {
-          console.log("made it to: false");
           return false;
         };
       };
@@ -111,7 +109,6 @@
       // uses coordinates to
       var reverseGeocoderLookup = function(addressJSON) {
         var addressObject = JSON.parse(addressJSON);
-        console.log("addressObject: " + addressObject);
         lat = addressObject.results[0].geometry.location.lat;
         lng = addressObject.results[0].geometry.location.lng;
         var reverseGeocoderCall = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng;
@@ -128,12 +125,6 @@
         });
         console.log("postalCodeObject[0].short_name: " + postalCodeObject[0].short_name);
         return postalCodeObject[0].short_name;
-      };
-
-      // failed effort to try to parse an address string from the api response
-      var parseAddress = function(xHttp){
-        console.log(xHttp._embedded);
-        console.log(xHttp._embedded.events[0]._embedded.venues[0].address.line1);
       };
 
       // set button to get DOM element with id='submit'
@@ -196,7 +187,6 @@
       var buildMapMarkers = function(result) {
         var postalCode = getPostalCode(result);
         var ticketmasterRequest = buildTicketmasterRequest(postalCode, todayDateFormatted, tomorrowDateFormatted, ticketmasterAPIKey);
-        console.log(ticketmasterRequest);
         httpGetAsync(ticketmasterRequest, function(result) {
           console.log(result);
         });
