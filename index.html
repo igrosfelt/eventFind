@@ -21,7 +21,15 @@
     </h1>
     <h2>
       Enter your location:
-      <input id="address" type="textbox">
+      <input id="address" type="textbox"> <br>
+      Show events within
+      <select id="radius">
+      	<option value = "5"> 5 </option>
+      	<option value = "10"> 10 </option>
+      	<option value = "15"> 15 </option>
+      	<option value = "20"> 20 </option>
+      </select>
+      miles
       <input id="submit" type="submit" value="Submit">
     </h2>
     <h3 id="location-info"></h3>
@@ -84,11 +92,15 @@
 
       // initialize variables
       //var postalCode;
+      //store selected radius
+      var radiusSelector = document.getElementById("radius");
+      var searchRadius = radiusSelector[radiusSelector.selectedIndex].value;
+      
       var ticketmasterRequest;
 
       // plug variables into url
-      var buildTicketmasterRequest = function(postalCode, startDate, endDate, APIkey) {
-        ticketmasterRequest = "https://app.ticketmaster.com/discovery/v2/events.json?postalCode=" + postalCode + "&radius=10&unit=miles&startDateTime="
+      var buildTicketmasterRequest = function(postalCode, searchRadius, startDate, endDate, APIkey) {
+        ticketmasterRequest = "https://app.ticketmaster.com/discovery/v2/events.json?postalCode=" + postalCode + "&radius=" + searchRadius+ "&unit=miles&startDateTime="
           + startDate + "&endDateTime=" + endDate + "&" + APIkey;
         return ticketmasterRequest;
       };
@@ -187,7 +199,7 @@
       var buildMapMarkers = function(result) {
         var postalCode = getPostalCode(result);
         console.log("postalCode: " + postalCode);
-        var ticketmasterRequest = buildTicketmasterRequest(postalCode, todayDateFormatted, tomorrowDateFormatted, ticketmasterAPIKey);
+        var ticketmasterRequest = buildTicketmasterRequest(postalCode, searchRadius, todayDateFormatted, tomorrowDateFormatted, ticketmasterAPIKey);
         console.log(ticketmasterRequest);
         httpGetAsync(ticketmasterRequest, function(result) {
           var ticketmasterApiResponse = JSON.parse(result);
