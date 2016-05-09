@@ -143,9 +143,10 @@
       // set MapDiv to get DOM element with id='map'
       var mapDiv = document.getElementById('map');
 
+      // var map;
       // initialize Google Map using Google Map API
       var initMap = function() {
-        var map = new google.maps.Map(mapDiv, {
+        map = new google.maps.Map(mapDiv, {
           // set zoom level of initialized map
           zoom: 12,
           // set default location to DAKAR, Senegal, West Africa (specifically, Larry Ebaugh's house)
@@ -210,8 +211,9 @@
               return event;
             };
           }).forEach(function(event) {
-            console.log("latitude: " + event._embedded.venues[0].location.latitude);
-            console.log("longitude: " + event._embedded.venues[0].location.longitude);
+
+            console.log("latitude: " + Number(event._embedded.venues[0].location.latitude));
+            console.log("longitude: " + Number(event._embedded.venues[0].location.longitude));
             //***************************************************************
             //***************************************************************
             // map markers will need to be built here in this portion of code
@@ -220,8 +222,8 @@
             //***************************************************************
             var marker = new google.maps.Marker({
               position: {
-                lat: event._embedded.venues[0].location.latitude,
-                lng: event._embedded.venues[0].location.longitude,
+                lat: Number(event._embedded.venues[0].location.latitude),
+                lng: Number(event._embedded.venues[0].location.longitude),
               },
               map: map,
               title: "Hello World",
