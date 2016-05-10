@@ -197,7 +197,7 @@
       var getTicketmasterApiRequest = function(result) {
         var postalCode = getPostalCode(result);
         console.log("postalCode: " + postalCode);
-        var ticketmasterRequest = buildTicketmasterRequest(postalCode, searchRadius, todayDateFormatted, tomorrowDateFormatted, ticketmasterAPIKey);
+        var ticketmasterRequest = buildTicketmasterRequest(postalCode, todayDateFormatted, tomorrowDateFormatted, ticketmasterAPIKey);
         console.log(ticketmasterRequest);
         httpGetAsync(ticketmasterRequest, function(result) {
           // parse Ticketmaster API response
