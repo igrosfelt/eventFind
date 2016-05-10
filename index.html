@@ -131,7 +131,6 @@
         var postalCodeObject = addressObject.results[0].address_components.filter(function(address_component) {
           return address_component.types[0] === "postal_code"
         });
-        //console.log("postalCodeObject[0].short_name: " + postalCodeObject[0].short_name);
         return postalCodeObject[0].short_name;
       };
 
@@ -209,9 +208,6 @@
               return event;
             };
           }).forEach(function(event) {
-
-            console.log("latitude: " + Number(event._embedded.venues[0].location.latitude));
-            console.log("longitude: " + Number(event._embedded.venues[0].location.longitude));
             //***************************************************************
             //***************************************************************
             // map markers will need to be built here in this portion of code
@@ -233,8 +229,13 @@
               '<p><b>URL</b>: %url%</p>' +
               '</div>'+
               '</div>';
+            var eventName = event.name;
+            var eventVenue = event._embedded.venues[0].name;
+            var eventURL = event.url;
+            console.log(eventURL);
+            var contentDisplay = contentString.replace("%event%", eventName).replace("%venue%", eventVenue).replace("%url%", eventURL);
             var infowindow = new google.maps.InfoWindow({
-              content: contentString,
+              content: contentDisplay,
             });
             marker.addListener('click', function() {
               infowindow.open(map, marker);
