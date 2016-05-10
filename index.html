@@ -238,6 +238,9 @@
               content: contentDisplay,
             });
             marker.addListener('click', function() {
+              infowindow.close(map, marker);
+            });
+            marker.addListener('click', function() {
               infowindow.open(map, marker);
             });
           });
