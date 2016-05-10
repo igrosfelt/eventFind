@@ -80,8 +80,8 @@
         return d;
       };
 
-      var todayDateFormatted = formatDate(getTodayDate());
-      var tomorrowDateFormatted = formatDate(getTomorrowDate());
+      var todayDateFormatted = "2016-05-13T00:00:00Z"// formatDate(getTodayDate());
+      var tomorrowDateFormatted = "2016-05-15T00:00:00Z"// formatDate(getTomorrowDate());
 
       // parse input
       var parseInput = function(input) {
@@ -90,6 +90,7 @@
 
       var googleGeocoderCall = "https://maps.googleapis.com/maps/api/geocode/json?address="
 
+<<<<<<< HEAD
       // initialize variables
       //var postalCode;
       //store selected radius
@@ -101,6 +102,18 @@
       // plug variables into url
       var buildTicketmasterRequest = function(postalCode, searchRadius, startDate, endDate, APIkey) {
         ticketmasterRequest = "https://app.ticketmaster.com/discovery/v2/events.json?postalCode=" + postalCode + "&radius=" + searchRadius+ "&unit=miles&startDateTime="
+=======
+      //store selected radius
+      
+
+      var ticketmasterRequest;
+
+      // plug variables into url
+      var buildTicketmasterRequest = function(postalCode, startDate, endDate, APIkey) {
+        var radiusSelector = document.getElementById("radius");
+        var searchRadius = radiusSelector[radiusSelector.selectedIndex].value;
+        ticketmasterRequest = "https://app.ticketmaster.com/discovery/v2/events.json?postalCode=" + postalCode + "&radius=" + searchRadius + "&unit=miles&startDateTime="
+>>>>>>> 14c43db9692c47b31a269f814c83fead6d37a3a4
           + startDate + "&endDateTime=" + endDate + "&" + APIkey;
         return ticketmasterRequest;
       };
@@ -125,7 +138,7 @@
         lng = addressObject.results[0].geometry.location.lng;
         var reverseGeocoderCall = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng;
         httpGetAsync(reverseGeocoderCall, function(result) {
-            buildMapMarkers(result);
+            getTicketmasterApiRequest(result);
         });
       };
 
@@ -145,9 +158,10 @@
       // set MapDiv to get DOM element with id='map'
       var mapDiv = document.getElementById('map');
 
+      // var map;
       // initialize Google Map using Google Map API
       var initMap = function() {
-        var map = new google.maps.Map(mapDiv, {
+        map = new google.maps.Map(mapDiv, {
           // set zoom level of initialized map
           zoom: 12,
           // set default location to DAKAR, Senegal, West Africa (specifically, Larry Ebaugh's house)
@@ -160,6 +174,7 @@
       // locate user input on Google Map
       var geocodeAddress = function(geocoder, resultsMap) {
         var address = document.getElementById('address').value;
+        //  for more information on geocoder, visit:
         // https://developers.google.com/maps/documentation/javascript/geocoding#GeocodingResponses
         geocoder.geocode({'address': address}, function(results, status) {
           if (status === google.maps.GeocoderStatus.OK) {
@@ -196,14 +211,39 @@
         document.getElementById('address').value = "";
       };
 
-      var buildMapMarkers = function(result) {
+      var getTicketmasterApiRequest = function(result) {
         var postalCode = getPostalCode(result);
         console.log("postalCode: " + postalCode);
         var ticketmasterRequest = buildTicketmasterRequest(postalCode, searchRadius, todayDateFormatted, tomorrowDateFormatted, ticketmasterAPIKey);
         console.log(ticketmasterRequest);
         httpGetAsync(ticketmasterRequest, function(result) {
+          // parse Ticketmaster API response
           var ticketmasterApiResponse = JSON.parse(result);
           console.log(ticketmasterApiResponse);
+          // filter uninteresting events like event parking from events list
+          var events = ticketmasterApiResponse._embedded.events.filter(function(event) {
+            if (event.classifications[0].genre.name !== "Undefined") {
+              return event;
+            };
+          }).forEach(function(event) {
+
+            console.log("latitude: " + Number(event._embedded.venues[0].location.latitude));
+            console.log("longitude: " + Number(event._embedded.venues[0].location.longitude));
+            //***************************************************************
+            //***************************************************************
+            // map markers will need to be built here in this portion of code
+            // one for each event returned by the API request
+            //***************************************************************
+            //***************************************************************
+            var marker = new google.maps.Marker({
+              position: {
+                lat: Number(event._embedded.venues[0].location.latitude),
+                lng: Number(event._embedded.venues[0].location.longitude),
+              },
+              map: map,
+              title: "Hello World",
+            });
+          });
         });
       }
 
@@ -215,7 +255,7 @@
         });
         httpGetAsync(googleGeocoderCall, function(result) {
           if (checkAddressExists(result)) {
-            buildMapMarkers(result);
+            getTicketmasterApiRequest(result);
           } else {
             reverseGeocoderLookup(result);
           }
