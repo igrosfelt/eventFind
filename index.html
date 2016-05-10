@@ -4,44 +4,101 @@
     <title>Event Find</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css"
+          href="https://fonts.googleapis.com/css?family=Cabin">
     <style>
     html, body {
       height: 100%;
       margin: 0;
       padding: 0;
+      background-color: rgb(218,165,32)
     }
     #map {
       height: 75%;
+      margin: 8vw;
+      margin-top: 0;
+      border-radius: 10px;
+    }
+    #entry_container {
+        text-align: center;
+        background-color: white;
+        color: Black;
+        font-family: "Cabin", sans-serif;
+        font-weight: bold;
+        margin: 8vw;
+        margin-top: 2vw;
+        margin-bottom: 15px;
+        border: solid;
+        border-radius: 10px;
+        padding: 1;
+        box-shadow: 0px 3px 3px black;
+    }
+    #address {
+        font-size: 16px;
+        border: solid;
+        border-radius:10px;
+        box-shadow: 0px 3px 3px grey;
+    }
+    #address:focus {
+        outline:0;
+    }
+    #radius{
+        font-size: 16px;
+        border:solid;
+        box-shadow: 0px 3px 3px grey;
+    }
+    #radius:focus {
+        outline:0;
+    }
+    #submit{
+        font-size: 16px;
+        border: solid;
+        border-radius: 10px;
+        background-color: white;
+        box-shadow: 0px 3px 3px grey;
+    }
+    #submit:hover{
+        background-color: rgb(220,220,220);
+    }
+    #submit:active {
+        background-color: rgb(220,220,220);
+        box-shadow: 0px 0px 0px;
+        transform: translateY(3px);
+    }
+    #submit:focus {
+        outline:0;
     }
     </style>
   </head>
   <body>
+    <div id = "entry_container">
     <h1>
-      Find today's local shows, concerts, and events in your area!
+      FIND AN EVENT
     </h1>
     <h2>
-      Enter your location:
-      <input id="address" type="textbox"> <br>
-      Show events within
+      IN:
+      <input id="address" placeholder="My Address" type="textbox">
+      WITHIN
       <select id="radius">
       	<option value = "5"> 5 </option>
       	<option value = "10"> 10 </option>
       	<option value = "15"> 15 </option>
       	<option value = "20"> 20 </option>
       </select>
-      miles
-      <input id="submit" type="submit" value="Submit">
+      MILES
+      <input id="submit" type="submit" value="SUBMIT">
     </h2>
     <h3 id="location-info"></h3>
+    </div>
     <div id="map"></div>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDrACRPiEvB85a4nDF_S02TizgOefrX0YM">
     </script>
     <script>
-
+  
       // Initialize Ticketmaster API key variable
       var ticketmasterAPIKey = "apikey=czmUT7VaCKrr1WgK1oncNUaVREIzmtQz";
-
+  
       // Asynchronous HTTP GET request to Ticketmaster API
       function httpGetAsync(theUrl, callback) {
           var xmlHttp = new XMLHttpRequest();
@@ -52,7 +109,7 @@
           xmlHttp.open("GET", theUrl, true); // true for asynchronous
           xmlHttp.send(null);
       };
-
+  
       // format date for Ticketmaster API call
       var formatDate = function(d) {
         var year = d.getFullYear().toString();
@@ -66,32 +123,32 @@
         };
          return year + "-" + month + "-" + date + "T00:00:00Z";
       }
-
+  
       var getTodayDate = function() {
         var d = new Date();
         // return today's date
         return d;
       };
-
+  
       var getTomorrowDate = function() {
         var d = new Date();
         d.setDate(d.getDate() + 1)
         // return tomorrow's date
         return d;
       };
-
+  
       var todayDateFormatted = "2016-05-13T00:00:00Z"// formatDate(getTodayDate());
       var tomorrowDateFormatted = "2016-05-15T00:00:00Z"// formatDate(getTomorrowDate());
-
+  
       // parse input
       var parseInput = function(input) {
         return input.split(" ");
       };
-
+  
       var googleGeocoderCall = "https://maps.googleapis.com/maps/api/geocode/json?address="
-
+  
       var ticketmasterRequest;
-
+  
       // plug variables into url
       var buildTicketmasterRequest = function(postalCode, startDate, endDate, APIkey) {
         var radiusSelector = document.getElementById("radius");
@@ -100,7 +157,7 @@
           + startDate + "&endDateTime=" + endDate + "&" + APIkey;
         return ticketmasterRequest;
       };
-
+  
       // check for existence of address in object
       var checkAddressExists = function(addressJSON) {
         var addressObject = JSON.parse(addressJSON);
@@ -113,7 +170,7 @@
           return false;
         };
       };
-
+  
       // uses coordinates to
       var reverseGeocoderLookup = function(addressJSON) {
         var addressObject = JSON.parse(addressJSON);
@@ -124,22 +181,23 @@
             getTicketmasterApiRequest(result);
         });
       };
-
+  
       // retrieve ZIP code from Google Geocoder JSON format
       var getPostalCode = function(addressJSON) {
         var addressObject = JSON.parse(addressJSON);
         var postalCodeObject = addressObject.results[0].address_components.filter(function(address_component) {
           return address_component.types[0] === "postal_code"
         });
+        //console.log("postalCodeObject[0].short_name: " + postalCodeObject[0].short_name);
         return postalCodeObject[0].short_name;
       };
-
+  
       // set button to get DOM element with id='submit'
       var button = document.getElementById("submit");
-
+  
       // set MapDiv to get DOM element with id='map'
       var mapDiv = document.getElementById('map');
-
+  
       // var map;
       // initialize Google Map using Google Map API
       var initMap = function() {
@@ -151,8 +209,10 @@
         });
         var geocoder = new google.maps.Geocoder();
         geocodeAddress(geocoder, map);
+        mapDiv.style.border = "solid";
+        mapDiv.style.boxShadow = "0px 3px 3px black";
       };
-
+  
       // locate user input on Google Map
       var geocodeAddress = function(geocoder, resultsMap) {
         var address = document.getElementById('address').value;
@@ -174,7 +234,7 @@
             // append new textnode to <h3> element
             var node = document.createElement("P");
             node.setAttribute("id", "new-location-info")
-            var textnode = document.createTextNode("Showing results for area surrounding: " + results[0].formatted_address);
+            var textnode = document.createTextNode("RESULTS FOR AREA SURROUNDING: " + results[0].formatted_address);
             node.appendChild(textnode);
             document.getElementById("location-info").appendChild(node);
           } else {
@@ -187,12 +247,12 @@
           return results[0];
         });
       };
-
+  
       // clear input from textbox
       var clearText = function() {
         document.getElementById('address').value = "";
       };
-
+  
       var getTicketmasterApiRequest = function(result) {
         var postalCode = getPostalCode(result);
         console.log("postalCode: " + postalCode);
@@ -208,6 +268,9 @@
               return event;
             };
           }).forEach(function(event) {
+  
+            console.log("latitude: " + Number(event._embedded.venues[0].location.latitude));
+            console.log("longitude: " + Number(event._embedded.venues[0].location.longitude));
             //***************************************************************
             //***************************************************************
             // map markers will need to be built here in this portion of code
@@ -223,19 +286,14 @@
               // change title to something like the event title
               title: "title",
             });
-            var contentString = '<div id="content">' + '<div id="siteNotice">' + '</div>' +
+            var contentString = '<div id="content" font-family = "Cabin" sans-serif>' + '<div id="siteNotice">' + '</div>' +
               '<p><b>Event</b>: %event%</p>' +
               '<p><b>Venue</b>: %venue%</p>' +
               '<p><b>URL</b>: %url%</p>' +
               '</div>'+
               '</div>';
-            var eventName = event.name;
-            var eventVenue = event._embedded.venues[0].name;
-            var eventURL = event.url;
-            console.log(eventURL);
-            var contentDisplay = contentString.replace("%event%", eventName).replace("%venue%", eventVenue).replace("%url%", eventURL);
             var infowindow = new google.maps.InfoWindow({
-              content: contentDisplay,
+              content: contentString,
             });
             marker.addListener('click', function() {
               infowindow.open(map, marker);
@@ -243,7 +301,7 @@
           });
         });
       }
-
+  
       button.addEventListener('click', initMap);
       button.addEventListener('click', function() {
         var addressArray = parseInput(document.getElementById('address').value);
@@ -259,7 +317,7 @@
         });
       });
       button.addEventListener('click', clearText);
-
+  
     </script>
   </body>
 </html>
