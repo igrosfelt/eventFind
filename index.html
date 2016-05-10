@@ -90,22 +90,6 @@
 
       var googleGeocoderCall = "https://maps.googleapis.com/maps/api/geocode/json?address="
 
-<<<<<<< HEAD
-      // initialize variables
-      //var postalCode;
-      //store selected radius
-      var radiusSelector = document.getElementById("radius");
-      var searchRadius = radiusSelector[radiusSelector.selectedIndex].value;
-      
-      var ticketmasterRequest;
-
-      // plug variables into url
-      var buildTicketmasterRequest = function(postalCode, searchRadius, startDate, endDate, APIkey) {
-        ticketmasterRequest = "https://app.ticketmaster.com/discovery/v2/events.json?postalCode=" + postalCode + "&radius=" + searchRadius+ "&unit=miles&startDateTime="
-=======
-      //store selected radius
-      
-
       var ticketmasterRequest;
 
       // plug variables into url
@@ -113,7 +97,6 @@
         var radiusSelector = document.getElementById("radius");
         var searchRadius = radiusSelector[radiusSelector.selectedIndex].value;
         ticketmasterRequest = "https://app.ticketmaster.com/discovery/v2/events.json?postalCode=" + postalCode + "&radius=" + searchRadius + "&unit=miles&startDateTime="
->>>>>>> 14c43db9692c47b31a269f814c83fead6d37a3a4
           + startDate + "&endDateTime=" + endDate + "&" + APIkey;
         return ticketmasterRequest;
       };
