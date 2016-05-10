@@ -227,13 +227,13 @@
               title: "Hello World",
             });
             var contentString = '<div id="content">' + '<div id="siteNotice">' + '</div>' +
-              '<p>Event: %event%</p>' +
-              '<p>Venue: </p>' +
-              '<p>URL: </p>' +
+              '<p><b>Event</b>: %event%</p>' +
+              '<p><b>Venue</b>: %venue%</p>' +
+              '<p><b>URL</b>: %url%</p>' +
               '</div>'+
               '</div>';
             var infowindow = new google.maps.InfoWindow({
-              content: "contentString",
+              content: contentString,
             });
             marker.addListener('click', function() {
               infowindow.open(map, marker);
