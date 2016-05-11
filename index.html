@@ -135,6 +135,12 @@
 
       // set button to get DOM element with id='submit'
       var button = document.getElementById("submit");
+      var textEntry = document.getElementById("address");
+      textEntry.addEventListener("keypress", function(event) {
+      	if (event.keyCode == 13) {
+      		button.click();
+      	};
+      });
 
       // set MapDiv to get DOM element with id='map'
       var mapDiv = document.getElementById('map');
