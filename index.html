@@ -153,6 +153,9 @@
         mapDiv.style.border = "solid";
         mapDiv.style.boxShadow = "0px 3px 3px black";
       };
+      
+      //initialize variable to store user's formatted address from geocoder
+      var userAddress;
 
       // locate user input on Google Map
       var geocodeAddress = function(geocoder, resultsMap) {
@@ -172,12 +175,9 @@
               var list = document.getElementById("location-info");
               list.removeChild(list.childNodes[0]);
             };
-            // append new textnode to <h3> element
-            var node = document.createElement("P");
-            node.setAttribute("id", "new-location-info")
-            var textnode = document.createTextNode("RESULTS FOR AREA SURROUNDING: " + results[0].formatted_address);
-            node.appendChild(textnode);
-            document.getElementById("location-info").appendChild(node);
+            // Set HTML of location info element
+            userAddress = results[0].formatted_address;
+            document.getElementById("location-info").innerHTML = "RESULTS FOR AREA SURROUNDING: " + userAddress;
           } else {
             if (status === "ZERO_RESULTS") {
               alert('Geocode was not successful for the following reason: LOCATION NOT FOUND')
@@ -203,6 +203,10 @@
           // parse Ticketmaster API response
           var ticketmasterApiResponse = JSON.parse(result);
           console.log(ticketmasterApiResponse);
+          // tell user if no results found
+          if (ticketmasterApiResponse._embedded === undefined) {
+            document.getElementById("location-info").innerHTML = "NO RESULTS FOR: " + userAddress;
+            };
           // filter uninteresting events like event parking from events list
           var events = ticketmasterApiResponse._embedded.events.filter(function(event) {
             if (event.classifications[0].genre.name !== "Undefined") {
