@@ -91,16 +91,19 @@
 
       // plug relevant variables into Ticketmaster search API URL
       var buildTicketmasterRequest = function(postalCode, startDate, endDate, APIkey) {
+        console.log("todayDateFormatted: " + todayDateFormatted);
+        console.log("tomorrowDateFormatted: " + tomorrowDateFormatted);
         // retrieve radius of search area
         var radiusSelector = document.getElementById("radius");
         var searchRadius = radiusSelector[radiusSelector.selectedIndex].value;
+        console.log("searchRadius: " + searchRadius);
         ticketmasterRequest = "https://app.ticketmaster.com/discovery/v2/events.json?postalCode=" + postalCode + "&radius=" + searchRadius + "&unit=miles&startDateTime="
           + startDate + "&endDateTime=" + endDate + "&" + APIkey;
         return ticketmasterRequest;
       };
 
       // check for existence of postal code in object
-      var checkAddressExists = function(addressJSON) {
+      var checkPostalCodeExists = function(addressJSON) {
         var addressObject = JSON.parse(addressJSON);
         var postalCodeObject = addressObject.results[0].address_components.filter(function(address_component) {
           return address_component.types[0] === "postal_code";
@@ -153,7 +156,7 @@
         mapDiv.style.border = "solid";
         mapDiv.style.boxShadow = "0px 3px 3px black";
       };
-      
+
       //initialize variable to store user's formatted address from geocoder
       var userAddress;
 
@@ -194,6 +197,28 @@
         document.getElementById('address').value = "";
       };
 
+      // create a string to populate infowindow
+      var createEventString = function(obj) {
+        var contentString = '<div id="content" font-family = "Cabin" sans-serif>' + '<div id="siteNotice">' + '</div>' +
+          '<p><b>Event</b>: %event%</p>' +
+          '<p><b>Genre</b>: %genre%</p>' +
+          '<p><b>Venue</b>: %venue%</p>' +
+          '<p><b>URL</b>: %url%</p>' +
+          '</div>'+
+          '</div>';
+          var eventName = obj.name;
+          var eventGenre = obj.classifications[0].genre.name;
+          var eventVenue = obj._embedded.venues[0].name;
+          var eventUrl = obj.url;
+          var displayString = contentString.replace("%event%", eventName).replace("%genre%", eventGenre).replace("%venue%", eventVenue).replace("%url%", eventUrl);
+          return displayString;
+      };
+
+      var createNewInfoWindow = function(contentString) {
+      };
+
+      var marker;
+
       var getTicketmasterApiRequest = function(result) {
         var postalCode = getPostalCode(result);
         console.log("postalCode: " + postalCode);
@@ -213,33 +238,16 @@
               return event;
             };
           }).forEach(function(event) {
-            //***************************************************************
-            //***************************************************************
-            // map markers will need to be built here in this portion of code
-            // one for each event returned by the API request
-            //***************************************************************
-            //***************************************************************
-            var marker = new google.maps.Marker({
+            marker = new google.maps.Marker({
               position: {
                 lat: Number(event._embedded.venues[0].location.latitude),
                 lng: Number(event._embedded.venues[0].location.longitude),
               },
               map: map,
-              // change title to something like the event title
-              title: "title",
+              title: event.classifications[0].genre.name,
             });
-            var contentString = '<div id="content" font-family = "Cabin" sans-serif>' + '<div id="siteNotice">' + '</div>' +
-              '<p><b>Event</b>: %event%</p>' +
-              '<p><b>Venue</b>: %venue%</p>' +
-              '<p><b>URL</b>: %url%</p>' +
-              '</div>'+
-              '</div>';
-            var eventName = event.name;
-            var eventVenue = event._embedded.venues[0].name;
-            var eventUrl = event.url;
-            var displayString = contentString.replace("%event%", eventName).replace("%venue%", eventVenue).replace("%url%", eventUrl);
             var infowindow = new google.maps.InfoWindow({
-              content: displayString,
+              content: createEventString(event),
             });
             marker.addListener('click', function() {
               infowindow.close(map, marker);
@@ -258,7 +266,7 @@
           googleGeocoderCall += (element + "+");
         });
         httpGetAsync(googleGeocoderCall, function(result) {
-          if (checkAddressExists(result)) {
+          if (checkPostalCodeExists(result)) {
             getTicketmasterApiRequest(result);
           } else {
             reverseGeocoderLookup(result);
