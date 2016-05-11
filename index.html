@@ -95,10 +95,10 @@
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDrACRPiEvB85a4nDF_S02TizgOefrX0YM">
     </script>
     <script>
-  
+
       // Initialize Ticketmaster API key variable
       var ticketmasterAPIKey = "apikey=czmUT7VaCKrr1WgK1oncNUaVREIzmtQz";
-  
+
       // Asynchronous HTTP GET request to Ticketmaster API
       function httpGetAsync(theUrl, callback) {
           var xmlHttp = new XMLHttpRequest();
@@ -109,7 +109,7 @@
           xmlHttp.open("GET", theUrl, true); // true for asynchronous
           xmlHttp.send(null);
       };
-  
+
       // format date for Ticketmaster API call
       var formatDate = function(d) {
         var year = d.getFullYear().toString();
@@ -123,32 +123,32 @@
         };
          return year + "-" + month + "-" + date + "T00:00:00Z";
       }
-  
+
       var getTodayDate = function() {
         var d = new Date();
         // return today's date
         return d;
       };
-  
+
       var getTomorrowDate = function() {
         var d = new Date();
         d.setDate(d.getDate() + 1)
         // return tomorrow's date
         return d;
       };
-  
+
       var todayDateFormatted = "2016-05-13T00:00:00Z"// formatDate(getTodayDate());
       var tomorrowDateFormatted = "2016-05-15T00:00:00Z"// formatDate(getTomorrowDate());
-  
+
       // parse input
       var parseInput = function(input) {
         return input.split(" ");
       };
-  
+
       var googleGeocoderCall = "https://maps.googleapis.com/maps/api/geocode/json?address="
-  
+
       var ticketmasterRequest;
-  
+
       // plug variables into url
       var buildTicketmasterRequest = function(postalCode, startDate, endDate, APIkey) {
         var radiusSelector = document.getElementById("radius");
@@ -157,7 +157,7 @@
           + startDate + "&endDateTime=" + endDate + "&" + APIkey;
         return ticketmasterRequest;
       };
-  
+
       // check for existence of address in object
       var checkAddressExists = function(addressJSON) {
         var addressObject = JSON.parse(addressJSON);
@@ -170,7 +170,7 @@
           return false;
         };
       };
-  
+
       // uses coordinates to
       var reverseGeocoderLookup = function(addressJSON) {
         var addressObject = JSON.parse(addressJSON);
@@ -181,7 +181,7 @@
             getTicketmasterApiRequest(result);
         });
       };
-  
+
       // retrieve ZIP code from Google Geocoder JSON format
       var getPostalCode = function(addressJSON) {
         var addressObject = JSON.parse(addressJSON);
@@ -191,13 +191,13 @@
         //console.log("postalCodeObject[0].short_name: " + postalCodeObject[0].short_name);
         return postalCodeObject[0].short_name;
       };
-  
+
       // set button to get DOM element with id='submit'
       var button = document.getElementById("submit");
-  
+
       // set MapDiv to get DOM element with id='map'
       var mapDiv = document.getElementById('map');
-  
+
       // var map;
       // initialize Google Map using Google Map API
       var initMap = function() {
@@ -212,7 +212,7 @@
         mapDiv.style.border = "solid";
         mapDiv.style.boxShadow = "0px 3px 3px black";
       };
-  
+
       // locate user input on Google Map
       var geocodeAddress = function(geocoder, resultsMap) {
         var address = document.getElementById('address').value;
@@ -247,12 +247,12 @@
           return results[0];
         });
       };
-  
+
       // clear input from textbox
       var clearText = function() {
         document.getElementById('address').value = "";
       };
-  
+
       var getTicketmasterApiRequest = function(result) {
         var postalCode = getPostalCode(result);
         console.log("postalCode: " + postalCode);
@@ -268,9 +268,6 @@
               return event;
             };
           }).forEach(function(event) {
-  
-            console.log("latitude: " + Number(event._embedded.venues[0].location.latitude));
-            console.log("longitude: " + Number(event._embedded.venues[0].location.longitude));
             //***************************************************************
             //***************************************************************
             // map markers will need to be built here in this portion of code
@@ -292,8 +289,12 @@
               '<p><b>URL</b>: %url%</p>' +
               '</div>'+
               '</div>';
+            var eventName = event.name;
+            var eventVenue = event._embedded.venues[0].name;
+            var eventUrl = event.url;
+            var displayString = contentString.replace("%event%", eventName).replace("%venue%", eventVenue).replace("%url%", eventUrl);
             var infowindow = new google.maps.InfoWindow({
-              content: contentString,
+              content: displayString,
             });
             marker.addListener('click', function() {
               infowindow.close(map, marker);
@@ -304,7 +305,7 @@
           });
         });
       }
-  
+
       button.addEventListener('click', initMap);
       button.addEventListener('click', function() {
         var addressArray = parseInput(document.getElementById('address').value);
@@ -320,7 +321,7 @@
         });
       });
       button.addEventListener('click', clearText);
-  
+
     </script>
   </body>
 </html>
