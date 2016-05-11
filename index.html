@@ -138,6 +138,12 @@
 
       // set button to get DOM element with id='submit'
       var button = document.getElementById("submit");
+      var textEntry = document.getElementById("address");
+      textEntry.addEventListener("keypress", function(event) {
+      	if (event.keyCode == 13) {
+      		button.click();
+      	};
+      });
 
       // set MapDiv to get DOM element with id='map'
       var mapDiv = document.getElementById('map');
@@ -168,6 +174,35 @@
         geocoder.geocode({'address': address}, function(results, status) {
           if (status === google.maps.GeocoderStatus.OK) {
             resultsMap.setCenter(results[0].geometry.location);
+            //Get radius selection for switch statement
+            var radiusSelector = document.getElementById("radius");
+            var searchRadius = radiusSelector[radiusSelector.selectedIndex].value;
+            var radius;
+            //converts the miles selected into meters
+            switch (searchRadius) {
+            	case "5":
+            		radius = 8047;
+            		break;
+            	case "10": 
+            		radius = 16093;
+            		break;
+            	case "15":
+            		radius = 24140;
+            		break;
+            	case "20":
+            		radius = 32187;
+            		break;
+            	};
+            // creates an invisible circle on the map with radius of selected radius
+    	      var circle = new google.maps.Circle ({
+    		      radius: radius,
+    		      center: results[0].geometry.location,
+    	    	  fillOpacity: 0,
+    		      strokeOpacity: 0,
+    		      map: resultsMap,
+    		    });
+    		    // sets zoom to closest zoom level that includes full circle radius
+    	      resultsMap.fitBounds(circle.getBounds());
             var marker = new google.maps.Marker({
               map: resultsMap,
               position: results[0].geometry.location
